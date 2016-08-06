@@ -37,7 +37,7 @@ class cPlotAndFitSANS(cPlotAndFit):
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(self.x_sa), max(self.x_la)])
         self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
-        self.ax1.set_ylabel("$\mathit{I} \, / \, a.u.$")
+        self.ax1.set_ylabel("$\mathit{I} \, / \, cm^{-1}$")
         
         
         self.sld_plot, = self.ax2.plot(self.xsld/10., self.ysld*1e6,\
