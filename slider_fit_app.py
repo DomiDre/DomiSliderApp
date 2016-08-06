@@ -12,12 +12,13 @@ import numpy as np
 
 # remove some annoying deprecation warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='matplotlib')
-version = 0.2
 
 class SliderFitApp(pyqt5widget.QMainWindow):
     def __init__(self, PlotClass):
         super().__init__()
         
+        self.version = 0.1
+
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         
 #       Set up menubar
