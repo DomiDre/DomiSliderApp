@@ -136,7 +136,7 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
 
-        self.statusBar().showMessage("Domi Slider Fit App v" + str(version))
+        self.statusBar().showMessage("Domi Slider Fit App v" + str(self.version))
     
     def slider_value_changed(self, value):
         changed_slider = self.sender()
@@ -167,7 +167,7 @@ class SliderFitApp(pyqt5widget.QMainWindow):
               Slider - Fitting App
               Copyright 2016 Dominixue Dresen
 
-              Version """+str(version)+"""
+              Version """+str(self.version)+"""
 
               Program to estimate fit parameters as initial step.
               """)
@@ -286,7 +286,7 @@ class cPlotAndFit(FigureCanvas):
 #        save_file = open("parameters.dat", "w")
 #        
 #        save_file.write("#Parameter estimated and exported using sas gui version " +\
-#                 str(version) + "\n")
+#                 str(self.version) + "\n")
 #        save_file.write("#Data file was: " + self.exp_data_path + "\n")
 #        if self.fit_result is not None:
 #            save_file.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
