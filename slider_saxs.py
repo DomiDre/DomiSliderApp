@@ -25,6 +25,7 @@ class cPlotAndFitSAXS(cPlotAndFit):
         self.ax1.set_xscale('log')
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(self.x), max(self.x)])
+        self.ax1.set_ylim([min(self.y)*0.8, max(self.y)*1.2])
         self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
         self.ax1.set_ylabel("$\mathit{I} \, / \, a.u.$")
         

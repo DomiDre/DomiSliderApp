@@ -58,6 +58,8 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(min(self.xp_sa), min(self.xm_sa)),\
                            max(max(self.xm_la), max(self.xm_la))])
+        self.ax1.set_ylim([min(min(self.yp_la), min(self.ym_la))*0.8,\
+                           max(max(self.ym_sa), max(self.ym_sa))*1.2])
         self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
         self.ax1.set_ylabel("$\mathit{I} \, / \, cm^{-1}$")
         
