@@ -245,7 +245,6 @@ class cPlotAndFit(FigureCanvas):
 
     def fit_local(self):
         self.update_vary_vals_of_params()
-        print(self.p.pretty_print())
         print("Running Levenberg-Marquardt.")
         self.fit_result = lmfit.minimize(self.figure_of_merit, self.p)
         self.p = self.fit_result.params
