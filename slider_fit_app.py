@@ -218,6 +218,7 @@ class cPlotAndFit(FigureCanvas):
     def update_plot(self):
         self.ymodel = self.get_model(self.p, self.x)
         self.model_plot.set_ydata(self.ymodel)
+        self.update_chi2()
         self.draw()
 
     def update_vary_vals_of_params(self):
@@ -274,10 +275,10 @@ class cPlotAndFit(FigureCanvas):
                     str(self.sy[ix]) + "\t" + str(self.ymodel[ix])+"\n")
         print("Wrote results to " + modelfile)
         savefile.close()
-##    def update_chi2(self):
-##        self.parent.label_chi2.setText("chi2/ndof: " + "{:.3f}".format(\
-##                get_chi2(self.fom, self.p,\
-##                self.model, self.qz, self.I_exp, self.sI_exp)))
+        
+    def update_chi2(self):
+        self.parent.label_chi2.setText("chi2/ndof: " +\
+                             "{:.3f}".format(self.chi2))
 
     
 #    

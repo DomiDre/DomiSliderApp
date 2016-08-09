@@ -57,7 +57,7 @@ class cPlotAndFitSANS(cPlotAndFit):
         
         self.ysld = self.get_sld(self.p, self.xsld)
         self.sld_plot.set_ydata(self.ysld*1e6)
-        
+        self.update_chi2()
         self.draw()
         
     def figure_of_merit(self, p):

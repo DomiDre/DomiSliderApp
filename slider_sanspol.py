@@ -115,14 +115,14 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
             savefile.write(str(qval) +"\t"+ str(self.yp_sa[iq])+"\t"+\
                     str(self.syp_sa[iq]) + "\t" + str(self.ymodelp_sa[iq])+"\n")
         savefile.write("#\n")
-        for iq, qval in enumerate(self.xpp_la):
+        for iq, qval in enumerate(self.xp_la):
             savefile.write(str(qval) +"\t"+ str(self.yp_la[iq])+"\t"+\
                     str(self.syp_la[iq]) + "\t" + str(self.ymodelp_la[iq])+"\n")
         for iq, qval in enumerate(self.xm_sa):
             savefile.write(str(qval) +"\t"+ str(self.ym_sa[iq])+"\t"+\
                     str(self.sym_sa[iq]) + "\t" + str(self.ymodelm_sa[iq])+"\n")
         savefile.write("#\n")
-        for iq, qval in enumerate(self.xpm_la):
+        for iq, qval in enumerate(self.xm_la):
             savefile.write(str(qval) +"\t"+ str(self.ym_la[iq])+"\t"+\
                     str(self.sym_la[iq]) + "\t" + str(self.ymodelm_la[iq])+"\n")
         print("Wrote results to " + self.modelfile)
