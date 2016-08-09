@@ -4,11 +4,11 @@ import lmfit
 import numpy as np
 class cPlotAndFitSANSPOL(cPlotAndFit):
     def __init__(self, parent=None):
-        super().__init__(parent)
         self.modelfile = "SANSPOL_modelfile.dat"
         self.sldmodelfile = "SANSPOL_sld_modelfile.dat"
         self.data_path_sa=None
         self.data_path_la=None
+        super().__init__(parent)
         
     def get_sld(self, p, x):
         sys.exit("Define ynucsld, ymagsld=get_sld(p, x) in cPlotAndFitSAXS")
@@ -118,6 +118,7 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         for iq, qval in enumerate(self.xp_la):
             savefile.write(str(qval) +"\t"+ str(self.yp_la[iq])+"\t"+\
                     str(self.syp_la[iq]) + "\t" + str(self.ymodelp_la[iq])+"\n")
+        savefile.write("#\n")
         for iq, qval in enumerate(self.xm_sa):
             savefile.write(str(qval) +"\t"+ str(self.ym_sa[iq])+"\t"+\
                     str(self.sym_sa[iq]) + "\t" + str(self.ymodelm_sa[iq])+"\n")

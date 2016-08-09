@@ -4,11 +4,11 @@ import lmfit
 import numpy as np
 class cPlotAndFitSANS(cPlotAndFit):
     def __init__(self, parent=None):
-        super().__init__(parent)
         self.modelfile = "sans_modelfile.dat"
         self.sldmodelfile = "sans_sld_modelfile.dat"
         self.data_path_sa=None
         self.data_path_la=None
+        super().__init__(parent)
         
     def get_sld(self, p, x):
         sys.exit("Define sld=get_sld(p, x) in cPlotAndFitSAXS")

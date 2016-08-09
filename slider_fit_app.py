@@ -99,8 +99,8 @@ class SliderFitApp(pyqt5widget.QMainWindow):
             self.checkboxes[parameter] = checkbox
         self.sliders_inverse = dict(zip(self.sliders.values(),self.sliders.keys()))
         
-        slider_layout.setColumnMinimumWidth(1,300)
-        slider_layout.setColumnMinimumWidth(2,100)
+#        slider_layout.setColumnMinimumWidth(1,300)
+#        slider_layout.setColumnMinimumWidth(2,100)
 
         
         button_widget = pyqt5widget.QWidget(self)
@@ -113,6 +113,12 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         self.but_localfit = pyqt5widget.QPushButton("Local Fit (LM)", self)
         self.but_localfit.setToolTip("Fit parameters set on vary in code.")
         self.but_localfit.clicked.connect(self.plot_window.fit_local)
+        self.but_fit_without_bounds = pyqt5widget.QPushButton("Local Fit Without Bounds (LM)", self)
+        self.but_fit_without_bounds.setToolTip("Run fit algorithm ignoring bounds from slider. Removes bias.")
+        self.but_fit_without_bounds.clicked.connect(self.plot_window.fit_local_wo_bounds)
+        but_saveparascript = pyqt5widget.QPushButton("Save Parameters to Script", self)
+        but_saveparascript.setToolTip("Overwrite parameters in script with set values.")
+        but_saveparascript.clicked.connect(self.plot_window.save_para_to_script)
 #        but_export = pyqt5widget.QPushButton("Export", self)
 #        but_export.setToolTip("Export parameter values to file.")
 #        but_export.clicked.connect(self.plot_window.export_params)
@@ -122,7 +128,9 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         button_layout.addWidget(self.label_chi2, 0, 0)
         button_layout.addWidget(self.but_globalfit, 1, 0)
         button_layout.addWidget(self.but_localfit, 2, 0)
-        button_layout.addWidget(but_exportmodel, 3, 0)
+        button_layout.addWidget(self.but_fit_without_bounds, 3, 0)
+        button_layout.addWidget(but_saveparascript, 1, 1)
+        button_layout.addWidget(but_exportmodel, 2, 1)
 #        button_layout.addWidget(but_export, 3, 0)
         
         layout = pyqt5widget.QGridLayout(self.main_widget)
@@ -251,7 +259,22 @@ class cPlotAndFit(FigureCanvas):
         self.p = self.fit_result.params
         print(lmfit.fit_report(self.fit_result))
         self.update_parent_sliders()
-        
+    
+    def fit_local_wo_bounds(self):
+        self.update_vary_vals_of_params()
+        p_wo_bounds = lmfit.Parameters()
+        for parameter in self.p:
+            p_wo_bounds.add(parameter, self.p[parameter].value,\
+                            vary=self.p[parameter].vary)
+        print("Running Levenberg-Marquardt without bounds in parameters.")
+        self.fit_result = lmfit.minimize(self.figure_of_merit, p_wo_bounds)
+        p_wo_bounds = self.fit_result.params
+        for parameter in self.p:
+            self.p[parameter].value = p_wo_bounds[parameter].value
+        print(lmfit.fit_report(self.fit_result))
+        self.update_parent_sliders()
+
+    
     def fit_global(self):
         self.update_vary_vals_of_params()
         print("Running Differential Evolution.")
@@ -275,6 +298,36 @@ class cPlotAndFit(FigureCanvas):
                     str(self.sy[ix]) + "\t" + str(self.ymodel[ix])+"\n")
         print("Wrote results to " + modelfile)
         savefile.close()
+    
+    def save_para_to_script(self):
+        self.update_vary_vals_of_params()
+        script_file_name = sys.argv[0]
+        script_file = open(script_file_name, "r")
+        
+        script_file_string = ""
+        for line in script_file:
+            if "self.p.add" in line:
+                line_beginning = line.split('self.p.add')[0]
+                parameter_name = line.split('self.p.add("')[-1].split('"')[0]
+                line_end = line.split(")")[-1]
+                para_value = self.p[parameter_name].value
+                para_min = self.p[parameter_name].min
+                para_max = self.p[parameter_name].max
+                para_vary = self.p[parameter_name].vary
+                script_file_string += line_beginning+\
+                                      'self.p.add("'+parameter_name+'", '+\
+                                       str(para_value) +", "+\
+                                       "min = " + str(para_min) +", "+\
+                                       "max = " + str(para_max) +", "+\
+                                       "vary = " + str(para_vary) + ")"+\
+                                       line_end
+            else:
+                script_file_string += line
+        script_file.close()
+        script_file = open(script_file_name, "w")
+        script_file.write(script_file_string)
+        script_file.close()
+        print("Updated script file: " + script_file_name)
         
     def update_chi2(self):
         self.parent.label_chi2.setText("chi2/ndof: " +\
