@@ -17,7 +17,7 @@ class SliderFitApp(pyqt5widget.QMainWindow):
     def __init__(self, PlotClass):
         super().__init__()
         
-        self.version = 0.5
+        self.version = 0.6
 
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         
