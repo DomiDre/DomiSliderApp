@@ -6,7 +6,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
         NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import warnings, lmfit, sys, os, datetime
-import sas_methods
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -119,9 +118,6 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         but_saveparascript = pyqt5widget.QPushButton("Save Parameters to Script", self)
         but_saveparascript.setToolTip("Overwrite parameters in script with set values.")
         but_saveparascript.clicked.connect(self.plot_window.save_para_to_script)
-#        but_export = pyqt5widget.QPushButton("Export", self)
-#        but_export.setToolTip("Export parameter values to file.")
-#        but_export.clicked.connect(self.plot_window.export_params)
         but_exportmodel = pyqt5widget.QPushButton("Export Model", self)
         but_exportmodel.setToolTip("Export Model.")
         but_exportmodel.clicked.connect(self.plot_window.export_model)
@@ -131,7 +127,6 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         button_layout.addWidget(self.but_fit_without_bounds, 3, 0)
         button_layout.addWidget(but_saveparascript, 1, 1)
         button_layout.addWidget(but_exportmodel, 2, 1)
-#        button_layout.addWidget(but_export, 3, 0)
         
         layout = pyqt5widget.QGridLayout(self.main_widget)
         layout.addWidget(self.plot_window, 0, 0)
@@ -194,6 +189,8 @@ class cPlotAndFit(FigureCanvas):
         self.data_path = None
         
         self.fit_result = None
+        
+        self.chi2 = 0
         self.init_data()
         self.fig = Figure(figsize=(4, 4))#, dpi=100)
         self.define_plot_canvas()
@@ -332,24 +329,6 @@ class cPlotAndFit(FigureCanvas):
     def update_chi2(self):
         self.parent.label_chi2.setText("chi2/ndof: " +\
                              "{:.3f}".format(self.chi2))
-
-    
-#    
-#    def export_params(self):
-#        save_file = open("parameters.dat", "w")
-#        
-#        save_file.write("#Parameter estimated and exported using sas gui version " +\
-#                 str(self.version) + "\n")
-#        save_file.write("#Data file was: " + self.exp_data_path + "\n")
-#        if self.fit_result is not None:
-#            save_file.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
-#        save_file.write("\n\n")
-#        for parameter in self.p:
-#            save_file.write(parameter + "\t" + str(self.p[parameter].value) + "\n")
-#        save_file.write("\n\n")
-#        save_file.write(sas_methods.get_params_list(self.p))
-#        save_file.close()
-#        print("Saved parameters to parameters.dat")
 
 
 if __name__ == '__main__':
