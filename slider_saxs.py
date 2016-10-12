@@ -4,9 +4,9 @@ import lmfit
 import numpy as np
 class cPlotAndFitSAXS(cPlotAndFit):
     def __init__(self, parent=None):
-        super().__init__(parent)
         self.modelfile = "saxs_modelfile.dat"
-        self.sldmodelfile = "sld_modelfile.dat"
+        self.sldmodelfile = "saxs_sldfile.dat"
+        super().__init__(parent)
         
     def get_sld(self, p, x):
         sys.exit("Define sld=get_sld(p, x) in cPlotAndFitSAXS")
@@ -55,7 +55,7 @@ class cPlotAndFitSAXS(cPlotAndFit):
         if self.fit_result is not None:
             savefile.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
 
-        savefile.write("#q / A-1 \t I / cm-1 \t sI / cm-1"+\
+        savefile.write("\n#q / A-1 \t I / cm-1 \t sI / cm-1"+\
                 " \t Imodel / cm-1\n")
         for iq, qval in enumerate(self.x):
             savefile.write(str(qval) +"\t"+ str(self.y[iq])+"\t"+\
@@ -67,7 +67,7 @@ class cPlotAndFitSAXS(cPlotAndFit):
         if self.fit_result is not None:
             savefile.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
 
-        savefile.write("#z / nm \t SLD / 1e-6 A-2\n")
+        savefile.write("\n#z / nm \t SLD / 1e-6 A-2\n")
         for iq, xval in enumerate(self.xsld):
             savefile.write(str(xval/10.) +"\t"+ str(self.ysld[iq]*1e6)+"\n")
         print("Wrote results to " + self.sldmodelfile)

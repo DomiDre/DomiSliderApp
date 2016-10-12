@@ -5,7 +5,7 @@ import numpy as np
 class cPlotAndFitSANS(cPlotAndFit):
     def __init__(self, parent=None):
         self.modelfile = "sans_modelfile.dat"
-        self.sldmodelfile = "sans_sld_modelfile.dat"
+        self.sldmodelfile = "sans_sldfile.dat"
         self.data_path_sa=None
         self.data_path_la=None
         super().__init__(parent)
@@ -75,12 +75,13 @@ class cPlotAndFitSANS(cPlotAndFit):
         if self.fit_result is not None:
             savefile.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
 
-        savefile.write("#q / A-1 \t I / cm-1 \t sI / cm-1"+\
+        savefile.write("\n#q / A-1 \t I / cm-1 \t sI / cm-1"+\
                 " \t Imodel / cm-1\n")
+        savefile.write("#SA\n")
         for iq, qval in enumerate(self.x_sa):
             savefile.write(str(qval) +"\t"+ str(self.y_sa[iq])+"\t"+\
                     str(self.sy_sa[iq]) + "\t" + str(self.ymodel_sa[iq])+"\n")
-        savefile.write("#\n")
+        savefile.write("#LA\n")
         for iq, qval in enumerate(self.x_la):
             savefile.write(str(qval) +"\t"+ str(self.y_la[iq])+"\t"+\
                     str(self.sy_la[iq]) + "\t" + str(self.ymodel_la[iq])+"\n")

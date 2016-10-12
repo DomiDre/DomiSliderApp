@@ -4,8 +4,8 @@ import lmfit
 import numpy as np
 class cPlotAndFitSANSPOL(cPlotAndFit):
     def __init__(self, parent=None):
-        self.modelfile = "SANSPOL_modelfile.dat"
-        self.sldmodelfile = "SANSPOL_sld_modelfile.dat"
+        self.modelfile = "sanspol_modelfile.dat"
+        self.sldmodelfile = "sanspol_sldfile.dat"
         self.data_path_sa=None
         self.data_path_la=None
         super().__init__(parent)
@@ -109,20 +109,21 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         if self.fit_result is not None:
             savefile.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
 
-        savefile.write("#q / A-1 \t I / cm-1 \t sI / cm-1"+\
+        savefile.write("\n#q / A-1 \t I / cm-1 \t sI / cm-1"+\
                 " \t Imodel / cm-1\n")
+        savefile.write("#I+ sa\n")
         for iq, qval in enumerate(self.xp_sa):
             savefile.write(str(qval) +"\t"+ str(self.yp_sa[iq])+"\t"+\
                     str(self.syp_sa[iq]) + "\t" + str(self.ymodelp_sa[iq])+"\n")
-        savefile.write("#\n")
+        savefile.write("#I+ la\n")
         for iq, qval in enumerate(self.xp_la):
             savefile.write(str(qval) +"\t"+ str(self.yp_la[iq])+"\t"+\
                     str(self.syp_la[iq]) + "\t" + str(self.ymodelp_la[iq])+"\n")
-        savefile.write("#\n")
+        savefile.write("#I- sa\n")
         for iq, qval in enumerate(self.xm_sa):
             savefile.write(str(qval) +"\t"+ str(self.ym_sa[iq])+"\t"+\
                     str(self.sym_sa[iq]) + "\t" + str(self.ymodelm_sa[iq])+"\n")
-        savefile.write("#\n")
+        savefile.write("#I- la\n")
         for iq, qval in enumerate(self.xm_la):
             savefile.write(str(qval) +"\t"+ str(self.ym_la[iq])+"\t"+\
                     str(self.sym_la[iq]) + "\t" + str(self.ymodelm_la[iq])+"\n")
@@ -133,7 +134,7 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         if self.fit_result is not None:
             savefile.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
 
-        savefile.write("#z / nm \t SLDnuc / 1e-6 A-2 \t SLDmag / 1e-6 A-2\n")
+        savefile.write("\n#z / nm \t SLDnuc / 1e-6 A-2 \t SLDmag / 1e-6 A-2\n")
         for iq, xval in enumerate(self.xsld):
             savefile.write(str(xval/10.) +"\t"+ str(self.ynucsld[iq]*1e6)+\
                 "\t"+ str(self.ymagsld[iq]*1e6)+"\n")

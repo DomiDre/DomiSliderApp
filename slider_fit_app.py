@@ -30,16 +30,15 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         self.menuBar().addSeparator()
         self.menuBar().addMenu(self.help_menu)
         
-#        Set up mainwindow
+#       Set up mainwindow
         self.main_widget = pyqt5widget.QWidget(self)
         
+#       Load (Experiment Specific) PlotClass containing parameters etc.
         self.plot_window = PlotClass(self)
-
         mpl_toolbar = NavigationToolbar(self.plot_window, self)
-        b_refresh = pyqt5widget.QPushButton("Refresh")
 
+#       Set up sliders
         slider_widgets = pyqt5widget.QWidget(self) 
-
         slider_layout = pyqt5widget.QGridLayout(slider_widgets)
         self.sliders = {}
         self.checkboxes = {}
@@ -98,42 +97,45 @@ class SliderFitApp(pyqt5widget.QMainWindow):
             self.checkboxes[parameter] = checkbox
         self.sliders_inverse = dict(zip(self.sliders.values(),self.sliders.keys()))
         
-#        slider_layout.setColumnMinimumWidth(1,300)
-#        slider_layout.setColumnMinimumWidth(2,100)
-
-        
+#        Define buttons
         button_widget = pyqt5widget.QWidget(self)
         button_layout = pyqt5widget.QGridLayout(button_widget)
         
         self.label_chi2 = pyqt5widget.QLabel("")
-        self.but_globalfit = pyqt5widget.QPushButton("Global Fit (Differential Evolution)", self)
-        self.but_globalfit.setToolTip("Fit parameters set on vary in code.")
-        self.but_globalfit.clicked.connect(self.plot_window.fit_global)
-        self.but_localfit = pyqt5widget.QPushButton("Local Fit (LM)", self)
-        self.but_localfit.setToolTip("Fit parameters set on vary in code.")
-        self.but_localfit.clicked.connect(self.plot_window.fit_local)
-        self.but_fit_without_bounds = pyqt5widget.QPushButton("Local Fit Without Bounds (LM)", self)
-        self.but_fit_without_bounds.setToolTip("Run fit algorithm ignoring bounds from slider. Removes bias.")
-        self.but_fit_without_bounds.clicked.connect(self.plot_window.fit_local_wo_bounds)
+        but_globalfit = pyqt5widget.QPushButton("Global Fit (Differential Evolution)", self)
+        but_globalfit.setToolTip("Fit parameters set on vary in code.")
+        but_globalfit.clicked.connect(self.plot_window.fit_global)
+        but_localfit = pyqt5widget.QPushButton("Local Fit (LM)", self)
+        but_localfit.setToolTip("Fit parameters set on vary in code.")
+        but_localfit.clicked.connect(self.plot_window.fit_local)
+        but_fit_without_bounds = pyqt5widget.QPushButton("Local Fit Without Bounds (LM)", self)
+        but_fit_without_bounds.setToolTip("Run fit algorithm ignoring bounds from slider. Removes bias.")
+        but_fit_without_bounds.clicked.connect(self.plot_window.fit_local_wo_bounds)
         but_saveparascript = pyqt5widget.QPushButton("Save Parameters to Script", self)
         but_saveparascript.setToolTip("Overwrite parameters in script with set values.")
         but_saveparascript.clicked.connect(self.plot_window.save_para_to_script)
         but_exportmodel = pyqt5widget.QPushButton("Export Model", self)
         but_exportmodel.setToolTip("Export Model.")
         but_exportmodel.clicked.connect(self.plot_window.export_model)
+        but_saveplot = pyqt5widget.QPushButton("Save Plot", self)
+        but_saveplot.setToolTip("Save current plot to png file.")
+        but_saveplot.clicked.connect(self.plot_window.save_plot)
         button_layout.addWidget(self.label_chi2, 0, 0)
-        button_layout.addWidget(self.but_globalfit, 1, 0)
-        button_layout.addWidget(self.but_localfit, 2, 0)
-        button_layout.addWidget(self.but_fit_without_bounds, 3, 0)
+        button_layout.addWidget(but_globalfit, 1, 0)
+        button_layout.addWidget(but_localfit, 2, 0)
+        button_layout.addWidget(but_fit_without_bounds, 3, 0)
         button_layout.addWidget(but_saveparascript, 1, 1)
         button_layout.addWidget(but_exportmodel, 2, 1)
+        button_layout.addWidget(but_saveplot, 3, 1)
         
+#       Define Design of everything
         layout = pyqt5widget.QGridLayout(self.main_widget)
         layout.addWidget(self.plot_window, 0, 0)
         layout.addWidget(mpl_toolbar, 1, 0)
         layout.addWidget(slider_widgets, 0, 1)
         layout.addWidget(button_widget, 1, 1)
         
+#       Size of window set to 1024x768... might be too big for old desktops
         layout.setColumnMinimumWidth(0, 1024)
         layout.setRowMinimumHeight(0, 768)
         self.main_widget.setFocus()
@@ -157,7 +159,6 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         cur_param.value = new_value
         self.plot_window.update_plot()
         
-
     def closeEvent(self, event):
         self.fileQuit()
 
@@ -188,10 +189,13 @@ class cPlotAndFit(FigureCanvas):
         
         self.data_path = None
         
+        self.local_fit_method = "leastsq"
         self.fit_result = None
+        self.modelfile = "sliderfit.dat"
         
         self.chi2 = 0
         self.init_data()
+        self.get_dof()
         self.fig = Figure(figsize=(4, 4))#, dpi=100)
         self.define_plot_canvas()
         FigureCanvas.__init__(self, self.fig)
@@ -213,7 +217,7 @@ class cPlotAndFit(FigureCanvas):
         
         self.ax1.set_xlabel("$\mathit{x}$")
         self.ax1.set_ylabel("$\mathit{y}$")
-        if self.x is not None and self.y is not None and self.sy is not None:
+        if self.y is not None and self.sy is not None:
             self.ax1.errorbar(self.x, self.y, self.sy, marker='.',\
                     linestyle='None', color='#4dac26', label=self.data_path)
 
@@ -223,6 +227,9 @@ class cPlotAndFit(FigureCanvas):
     def update_plot(self):
         self.ymodel = self.get_model(self.p, self.x)
         self.model_plot.set_ydata(self.ymodel)
+        fom = self.figure_of_merit(self.p)
+        
+        self.chi2 = sum(fom**2)/self.dof
         self.update_chi2()
         self.draw()
 
@@ -234,7 +241,13 @@ class cPlotAndFit(FigureCanvas):
     def figure_of_merit(self, p):
         self.ymodel = self.get_model(p, self.x)
         return (self.ymodel-self.y)/self.sy
-        
+    
+    def get_dof(self):
+        self.dof = len(self.x)
+        for param in self.p:
+            if self.p[param].vary:
+                self.dof -= 1
+    
     def update_parent_sliders(self):
         sliders = self.parent.sliders
         for parameter in self.p:
@@ -251,11 +264,29 @@ class cPlotAndFit(FigureCanvas):
 
     def fit_local(self):
         self.update_vary_vals_of_params()
-        print("Running Levenberg-Marquardt.")
-        self.fit_result = lmfit.minimize(self.figure_of_merit, self.p)
-        self.p = self.fit_result.params
-        print(lmfit.fit_report(self.fit_result))
-        self.update_parent_sliders()
+        if self.local_fit_method == "leastsq":
+            print("Running Levenberg-Marquardt.")
+            self.parent.statusBar().showMessage("Running Levenberg-Marquardt...")
+            self.fit_result = lmfit.minimize(self.figure_of_merit, self.p)
+            self.parent.statusBar().showMessage("Levenberg-Marquardt Fit Done.")
+            self.p = self.fit_result.params
+            print(lmfit.fit_report(self.fit_result))
+            self.update_parent_sliders()
+        elif self.local_fit_method == "nelder":
+            print("Running Downhill-Simplex.")
+            self.parent.statusBar().showMessage("Running Downhill-Simplex...")
+            self.fit_result = lmfit.minimize(self.figure_of_merit, self.p,\
+                                 method="nelder")
+            self.parent.statusBar().showMessage("Downhill-Simplex Fit Done.")
+            self.p = self.fit_result.params
+            print(lmfit.fit_report(self.fit_result))
+            self.update_parent_sliders()
+        else:
+            print("WARNING: Local fit method not known.")
+            self.parent.statusBar().showMessage("WARNING: " +\
+                        "Local Fit Method is not known. "+\
+                        "Please correct and restart.")
+            
     
     def fit_local_wo_bounds(self):
         self.update_vary_vals_of_params()
@@ -264,7 +295,9 @@ class cPlotAndFit(FigureCanvas):
             p_wo_bounds.add(parameter, self.p[parameter].value,\
                             vary=self.p[parameter].vary)
         print("Running Levenberg-Marquardt without bounds in parameters.")
+        self.parent.statusBar().showMessage("Running Levenberg-Marquardt without bounds...")
         self.fit_result = lmfit.minimize(self.figure_of_merit, p_wo_bounds)
+        self.parent.statusBar().showMessage("Levenberg-Marquardt Fit without bounds done.")
         p_wo_bounds = self.fit_result.params
         for parameter in self.p:
             self.p[parameter].value = p_wo_bounds[parameter].value
@@ -274,16 +307,17 @@ class cPlotAndFit(FigureCanvas):
     
     def fit_global(self):
         self.update_vary_vals_of_params()
-        print("Running Differential Evolution.")
+        print("Running Differential Evolution...")
+        self.parent.statusBar().showMessage("Running Differential Evolution...")
         self.fit_result = lmfit.minimize(self.figure_of_merit, self.p,\
                 method="differential_evolution")
+        self.parent.statusBar().showMessage("Differential Evolution Fit Done.")
         self.p = self.fit_result.params
         print(lmfit.fit_report(self.fit_result))
         self.update_parent_sliders()
             
     def export_model(self):
-        modelfile = "modelfile.dat"
-        savefile = open(modelfile, "w")
+        savefile = open(self.modelfile, "w")
         if self.fit_result is not None:
             savefile.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
 
@@ -293,7 +327,7 @@ class cPlotAndFit(FigureCanvas):
         for ix, xval in enumerate(self.qz):
             savefile.write(str(xval) +"\t"+ str(self.y[ix])+"\t"+\
                     str(self.sy[ix]) + "\t" + str(self.ymodel[ix])+"\n")
-        print("Wrote results to " + modelfile)
+        print("Wrote results to " + self.modelfile)
         savefile.close()
     
     def save_para_to_script(self):
@@ -305,7 +339,14 @@ class cPlotAndFit(FigureCanvas):
         for line in script_file:
             if "self.p.add" in line:
                 line_beginning = line.split('self.p.add')[0]
+                if line_beginning.strip().startswith("#"):
+                    script_file_string += line
+                    continue
+                    
                 parameter_name = line.split('self.p.add("')[-1].split('"')[0]
+                if parameter_name.strip().startswith('self.'):
+                    parameter_name = line.split("self.p.add('")[-1].split("'")[0]
+
                 line_end = line.split(")")[-1]
                 para_value = self.p[parameter_name].value
                 para_min = self.p[parameter_name].min
@@ -325,7 +366,10 @@ class cPlotAndFit(FigureCanvas):
         script_file.write(script_file_string)
         script_file.close()
         print("Updated script file: " + script_file_name)
-        
+    
+    def save_plot(self):
+        self.fig.savefig(self.modelfile.rsplit(".",1)[0]+"_plot.png")
+
     def update_chi2(self):
         self.parent.label_chi2.setText("chi2/ndof: " +\
                              "{:.3f}".format(self.chi2))
