@@ -25,8 +25,11 @@ class cPlotAndFitSAXS(cPlotAndFit):
         self.ax1.set_xscale('log')
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(self.x), max(self.x)])
-        self.ax1.set_ylim([min(self.y)*0.8, max(self.y)*1.2])
-        self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
+        if self.y is not None:
+            self.ax1.set_ylim([min(self.y)*0.8, max(self.y)*1.2])
+        else:
+            self.ax1.set_ylim([min(self.ymodel)*0.8, max(self.ymodel)*1.2])
+        self.ax1.set_xlabel("$\mathit{q} \, / \, \AA^{-1}$")
         self.ax1.set_ylabel("$\mathit{I} \, / \, a.u.$")
         
         
@@ -43,6 +46,14 @@ class cPlotAndFitSAXS(cPlotAndFit):
         
         self.ysld = self.get_sld(self.p, self.xsld)
         self.sld_plot.set_ydata(self.ysld*1e6)
+        
+        if self.y is not None:
+            fom = self.figure_of_merit(self.p)
+            self.chi2 = sum(fom**2)/self.dof
+        else:
+            fom = 0
+            self.chi2 = 0
+        self.update_chi2()
         
         self.draw()
         

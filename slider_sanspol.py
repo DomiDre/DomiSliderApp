@@ -8,6 +8,15 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         self.sldmodelfile = "sanspol_sldfile.dat"
         self.data_path_sa=None
         self.data_path_la=None
+        self.yp_sa = None
+        self.yp_la = None
+        self.ym_sa = None
+        self.ym_la = None
+        self.syp_sa = None
+        self.syp_la = None
+        self.sym_sa = None
+        self.sym_la = None
+
         super().__init__(parent)
         
     def get_sld(self, p, x):
@@ -16,7 +25,14 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
     def get_model(self, p, x_sa, x_la):
         sys.exit("Define yp_sa, yp_la, ym_sa, ym_la=get_model(p, xp_sa, "+\
                  "xp_la, xm_sa, xm_la) in cPlotAndFitSANSPOL")
-        
+                 
+    def get_dof(self):
+        self.dof = len(self.xp_la) + len(self.xm_la) +\
+                    len(self.xp_sa) + len(self.xm_sa) 
+        for param in self.p:
+            if self.p[param].vary:
+                self.dof -= 1
+                
     def define_plot_canvas(self):
         self.ax1 = self.fig.add_subplot(211)
         self.ax2 = self.fig.add_subplot(212)
@@ -57,9 +73,13 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         self.ax1.set_xscale('log')
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(min(self.xp_sa), min(self.xm_sa)),\
-                           max(max(self.xm_la), max(self.xm_la))])
-        self.ax1.set_ylim([min(min(self.yp_la), min(self.ym_la))*0.8,\
-                           max(max(self.ym_sa), max(self.ym_sa))*1.2])
+                           max(max(self.xp_la), max(self.xm_la))])
+        if self.yp_la is not None:
+            self.ax1.set_ylim([min(min(self.yp_la), min(self.ym_la))*0.8,\
+                               max(max(self.yp_sa), max(self.ym_sa))*1.2])
+        else:
+            self.ax1.set_ylim([min(min(self.ymodelp_la), min(self.ymodelm_la))*0.8,\
+                               max(max(self.ymodelp_sa), max(self.ymodelm_sa))*1.2])
         self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
         self.ax1.set_ylabel("$\mathit{I} \, / \, cm^{-1}$")
         
@@ -87,6 +107,11 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         self.sldnuc_plot.set_ydata(self.ynucsld*1e6)
         self.sldmag_plot.set_ydata(self.ymagsld*1e6)
         
+        if self.yp_sa is not None:
+            fom = self.figure_of_merit(self.p)
+            self.chi2 = sum(fom**2)/self.dof
+            self.update_chi2()
+        
         self.draw()
         
     def figure_of_merit(self, p):
@@ -102,6 +127,7 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         resim_la = (np.log(self.ymodelm_la)-np.log(self.ym_la))/self.sym_la*\
                   self.ym_la
         resi = np.concatenate([resip_sa, resip_la, resim_sa, resim_la])
+        
         return resi
         
     def export_model(self):

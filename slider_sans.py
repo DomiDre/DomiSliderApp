@@ -16,6 +16,12 @@ class cPlotAndFitSANS(cPlotAndFit):
     def get_model(self, p, x_sa, x_la):
         sys.exit("Define y_sa, y_la=get_model(p, x_sa, x_la) in cPlotAndFitSANS")
         
+    def get_dof(self):
+        self.dof = len(self.x_sa) + len(self.x_la) 
+        for param in self.p:
+            if self.p[param].vary:
+                self.dof -= 1
+                
     def define_plot_canvas(self):
         self.ax1 = self.fig.add_subplot(211)
         self.ax2 = self.fig.add_subplot(212)
@@ -57,6 +63,11 @@ class cPlotAndFitSANS(cPlotAndFit):
         
         self.ysld = self.get_sld(self.p, self.xsld)
         self.sld_plot.set_ydata(self.ysld*1e6)
+        
+        fom = self.figure_of_merit(self.p)
+        
+        self.chi2 = sum(fom**2)/self.dof
+        
         self.update_chi2()
         self.draw()
         

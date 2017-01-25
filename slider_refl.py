@@ -44,6 +44,11 @@ class cPlotAndFitRefl(cPlotAndFit):
         self.model_plot.set_ydata(self.ymodel)
         self.sld_plot.set_ydata(np.real(self.ysld)*1e6)
         self.sld_plot_imag.set_ydata(np.imag(self.ysld)*1e6)
+        fom = self.figure_of_merit(self.p)
+        
+        self.chi2 = sum(fom**2)/self.dof
+        self.update_chi2()
+
         self.draw()
         
     def figure_of_merit(self, p):

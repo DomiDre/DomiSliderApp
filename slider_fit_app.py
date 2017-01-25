@@ -5,7 +5,7 @@ import PyQt5.QtWidgets as pyqt5widget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas,\
         NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import warnings, lmfit, sys, os, datetime
+import warnings, lmfit, sys, os, datetime, os.path, time
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -33,6 +33,8 @@ class SliderFitApp(pyqt5widget.QMainWindow):
 #       Set up mainwindow
         self.main_widget = pyqt5widget.QWidget(self)
         
+        self.label_chi2 = pyqt5widget.QLabel("")
+
 #       Load (Experiment Specific) PlotClass containing parameters etc.
         self.plot_window = PlotClass(self)
         mpl_toolbar = NavigationToolbar(self.plot_window, self)
@@ -101,7 +103,6 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         button_widget = pyqt5widget.QWidget(self)
         button_layout = pyqt5widget.QGridLayout(button_widget)
         
-        self.label_chi2 = pyqt5widget.QLabel("")
         but_globalfit = pyqt5widget.QPushButton("Global Fit (Differential Evolution)", self)
         but_globalfit.setToolTip("Fit parameters set on vary in code.")
         but_globalfit.clicked.connect(self.plot_window.fit_global)
@@ -196,14 +197,18 @@ class cPlotAndFit(FigureCanvas):
         self.chi2 = 0
         self.init_data()
         self.get_dof()
-        self.fig = Figure(figsize=(4, 4))#, dpi=100)
-        self.define_plot_canvas()
-        FigureCanvas.__init__(self, self.fig)
-        FigureCanvas.setSizePolicy(self,
-                pyqt5widget.QSizePolicy.Expanding,
-                pyqt5widget.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
-        self.fig.tight_layout()
+
+        if parent is not None:
+            self.fig = Figure(figsize=(4, 4))#, dpi=100)
+            self.define_plot_canvas()
+            FigureCanvas.__init__(self, self.fig)
+            FigureCanvas.setSizePolicy(self,
+                    pyqt5widget.QSizePolicy.Expanding,
+                    pyqt5widget.QSizePolicy.Expanding)
+            FigureCanvas.updateGeometry(self)
+            self.fig.tight_layout()
+        
+            self.update_plot()
         
     def init_data(self):
         sys.exit("Define init_data() for cPlotAndFit. Setting initial "+\
@@ -318,13 +323,18 @@ class cPlotAndFit(FigureCanvas):
             
     def export_model(self):
         savefile = open(self.modelfile, "w")
+        savefile.write("#Fit procedure performed from: " + str(sys.argv[0]) + "\n")
+        savefile.write("#Loaded data from: " + str(self.data_path) + "\n")
+        savefile.write("#Extraction performed at: " +  time.strftime("%c") + "\n")
+        savefile.write("#Used Slider Fitting App: " +  str(self.parent.version) + "\n")
         if self.fit_result is not None:
             savefile.write("#"+lmfit.fit_report(self.fit_result).replace("\n", "\n#"))
 
-        savefile.write("#Fitrange: " + str(self.qmin) +\
-                " .. " + str(self.qmax) + "\n")
-        savefile.write("#x \t y \t sy \t ymodel\n")
-        for ix, xval in enumerate(self.qz):
+        #savefile.write("#Fitrange: " + str(self.qmin) +\
+        #        " .. " + str(self.qmax) + "\n")
+        
+        savefile.write("\n#x \t y \t sy \t ymodel\n")
+        for ix, xval in enumerate(self.x):
             savefile.write(str(xval) +"\t"+ str(self.y[ix])+"\t"+\
                     str(self.sy[ix]) + "\t" + str(self.ymodel[ix])+"\n")
         print("Wrote results to " + self.modelfile)
