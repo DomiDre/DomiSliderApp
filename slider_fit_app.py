@@ -176,7 +176,9 @@ class SliderFitApp(pyqt5widget.QMainWindow):
 
               Program to estimate fit parameters as initial step.
               """)
-              
+    def refl_plot_additional_data(self, x, y, sy):
+        self.plot_window.ax1.errorbar(x, y, sy)
+
 class cPlotAndFit(FigureCanvas):
     def __init__(self, parent=None):
         self.parent = parent
@@ -197,7 +199,6 @@ class cPlotAndFit(FigureCanvas):
         self.chi2 = 0
         self.init_data()
         self.get_dof()
-
         if parent is not None:
             self.fig = Figure(figsize=(4, 4))#, dpi=100)
             self.define_plot_canvas()
@@ -207,7 +208,6 @@ class cPlotAndFit(FigureCanvas):
                     pyqt5widget.QSizePolicy.Expanding)
             FigureCanvas.updateGeometry(self)
             self.fig.tight_layout()
-        
             self.update_plot()
         
     def init_data(self):
@@ -223,12 +223,13 @@ class cPlotAndFit(FigureCanvas):
         self.ax1.set_xlabel("$\mathit{x}$")
         self.ax1.set_ylabel("$\mathit{y}$")
         if self.y is not None and self.sy is not None:
-            self.ax1.errorbar(self.x, self.y, self.sy, marker='.',\
-                    linestyle='None', color='#4dac26', label=self.data_path)
+            self.errorbar_data =\
+                self.ax1.errorbar(self.x, self.y, self.sy, marker='.',\
+                linestyle='None', color='#4dac26', label=self.data_path)
 
         self.model_plot, = self.ax1.plot(self.x, self.ymodel, marker='None',\
                 linestyle='-', color='#ca0020', lw=1, label="Model")
-    
+
     def update_plot(self):
         self.ymodel = self.get_model(self.p, self.x)
         self.model_plot.set_ydata(self.ymodel)
@@ -238,6 +239,24 @@ class cPlotAndFit(FigureCanvas):
         self.update_chi2()
         self.draw()
 
+    def update_errorbar(self, errorbar_data, x, y, y_error):
+        line, (error_top, error_bot), (bars, ) = errorbar_data
+        
+        # update line plot
+        line.set_xdata(x)
+        line.set_ydata(y)
+        
+        y_error_top = y + y_error
+        y_error_bot = y - y_error
+        error_top.set_xdata(x)
+        error_bot.set_xdata(x)
+        error_top.set_ydata(y_error_top)
+        error_bot.set_ydata(y_error_bot)
+
+        new_segments = [np.array([[xp, yt], [xp,yb]])\
+                        for xp, yt, yb in zip(x, y_error_top, y_error_bot)]
+        bars.set_segments(new_segments)
+
     def update_vary_vals_of_params(self):
         for parameter in self.p:
             self.p[parameter].vary =\
@@ -245,6 +264,7 @@ class cPlotAndFit(FigureCanvas):
 
     def figure_of_merit(self, p):
         self.ymodel = self.get_model(p, self.x)
+        
         return (self.ymodel-self.y)/self.sy
     
     def get_dof(self):

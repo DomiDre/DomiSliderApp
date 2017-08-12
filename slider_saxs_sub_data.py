@@ -1,12 +1,8 @@
-try:
-    from .slider_fit_app import cPlotAndFit
-except:
-    from slider_fit_app import cPlotAndFit
-
+from slider_fit_app import cPlotAndFit
 import PyQt5.QtWidgets as pyqt5widget
 import lmfit
 import numpy as np
-class cPlotAndFitSAXS(cPlotAndFit):
+class cPlotAndFitSAXSDataSubber(cPlotAndFit):
     def __init__(self, parent=None):
         self.modelfile = "saxs_modelfile.dat"
         self.sldmodelfile = "saxs_sldfile.dat"
@@ -21,19 +17,16 @@ class cPlotAndFitSAXS(cPlotAndFit):
         
         if self.x is not None and self.y is not None and self.sy is not None:
             self.ax1.errorbar(self.x, self.y, self.sy, marker='.',\
-                    linestyle='None', color='#0571b0', label=self.data_path, zorder=0)
+                    linestyle='None', color='#4dac26', label=self.data_path)
 
         self.model_plot, = self.ax1.plot(self.x, self.ymodel, marker='None',\
-                linestyle='-', color='#ca0020', lw=1, label="Model", zorder=1)
+                linestyle='-', color='#ca0020', lw=1, label="Model")
         
         self.ax1.set_xscale('log')
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(self.x), max(self.x)])
-        if self.y is not None:
-            self.ax1.set_ylim([min(self.y)*0.8, max(self.y)*1.2])
-        else:
-            self.ax1.set_ylim([min(self.ymodel)*0.8, max(self.ymodel)*1.2])
-        self.ax1.set_xlabel("$\mathit{q} \, / \, \AA^{-1}$")
+        self.ax1.set_ylim([min(self.y)*0.8, max(self.y)*1.2])
+        self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
         self.ax1.set_ylabel("$\mathit{I} \, / \, a.u.$")
         
         
@@ -46,17 +39,26 @@ class cPlotAndFitSAXS(cPlotAndFit):
         
     def update_plot(self):
         self.ymodel = self.get_model(self.p, self.x)
-        self.model_plot.set_ydata(self.ymodel)
+        self.ax1.cla()
+        self.ax1.errorbar(self.x, self.y, self.sy, marker='.',\
+                    linestyle='None', color='#4dac26', label=self.data_path)
+
+        self.model_plot, = self.ax1.plot(self.x, self.ymodel, marker='None',\
+                linestyle='-', color='#ca0020', lw=1, label="Model")
+        
+        self.ax1.set_xscale('log')
+        self.ax1.set_yscale('log')
+        self.ax1.set_xlim([min(self.x), max(self.x)])
+        self.ax1.set_ylim([min(self.y)*0.8, max(self.y)*1.2])
+        self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
+        self.ax1.set_ylabel("$\mathit{I} \, / \, a.u.$")
         
         self.ysld = self.get_sld(self.p, self.xsld)
         self.sld_plot.set_ydata(self.ysld*1e6)
         
-        if self.y is not None:
-            fom = self.figure_of_merit(self.p)
-            self.chi2 = sum(fom**2)/self.dof
-        else:
-            fom = 0
-            self.chi2 = 0
+        fom = self.figure_of_merit(self.p)
+        
+        self.chi2 = sum(fom**2)/self.dof
         self.update_chi2()
         
         self.draw()

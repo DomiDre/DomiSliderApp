@@ -1,4 +1,7 @@
-from slider_fit_app import cPlotAndFit
+try:
+    from .slider_fit_app import cPlotAndFit
+except:
+    from slider_fit_app import cPlotAndFit
 import PyQt5.QtWidgets as pyqt5widget
 import lmfit
 import numpy as np
@@ -41,8 +44,8 @@ class cPlotAndFitSANS(cPlotAndFit):
         
         self.ax1.set_xscale('log')
         self.ax1.set_yscale('log')
-        self.ax1.set_xlim([min(self.x_sa), max(self.x_la)])
-        self.ax1.set_ylim([min(self.y_la[self.y_la>0])*0.8, max(self.y_sa)*1.2])
+        self.ax1.set_xlim([min(self.x_la), max(self.x_sa)])
+        self.ax1.set_ylim([min(self.y_sa[self.y_sa>0])*0.8, max(self.y_la)*1.2])
         self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
         self.ax1.set_ylabel("$\mathit{I} \, / \, cm^{-1}$")
         
