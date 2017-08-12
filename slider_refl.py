@@ -18,10 +18,12 @@ class cPlotAndFitRefl(cPlotAndFit):
         
         if self.x is not None and self.y is not None and self.sy is not None:
             self.ax1.errorbar(self.x, self.y, self.sy, marker='.',\
-                    linestyle='None', color='#2c7bb6', label=self.data_path)
+                    linestyle='None', color='#2c7bb6', label=self.data_path,\
+                    zorder=0)
 
         self.model_plot, = self.ax1.plot(self.x, self.ymodel, marker='None',\
-                linestyle='-', color='#ca0020', lw=1, label="Model")
+                linestyle='-', color='#ca0020', lw=1, label="Model",\
+                zorder=1)
         
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(self.x), max(self.x)])
