@@ -34,7 +34,7 @@ class cPlotAndFitSAXS(cPlotAndFit):
         else:
             self.ax1.set_ylim([min(self.ymodel)*0.8, max(self.ymodel)*1.2])
         self.ax1.set_xlabel("$\mathit{q} \, / \, \AA^{-1}$")
-        self.ax1.set_ylabel("$\mathit{I} \, / \, a.u.$")
+        self.ax1.set_ylabel("$\mathit{I} \, / \, cm^{-1}$")
         
         
         self.sld_plot, = self.ax2.plot(self.xsld/10., self.ysld*1e6,\
