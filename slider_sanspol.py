@@ -1,4 +1,4 @@
-from slider_fit_app import cPlotAndFit
+from SliderApp.slider_fit_app import cPlotAndFit
 import PyQt5.QtWidgets as pyqt5widget
 import lmfit
 import numpy as np
@@ -6,6 +6,7 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
     def __init__(self, parent=None):
         self.modelfile = "sanspol_modelfile.dat"
         self.sldmodelfile = "sanspol_sldfile.dat"
+        
         self.data_path_sa=None
         self.data_path_la=None
         self.yp_sa = None
