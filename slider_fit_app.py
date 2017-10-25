@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 import warnings, lmfit, sys, os, datetime, os.path, time
 import matplotlib.pyplot as plt
 import numpy as np
-
+import screeninfo
 # remove some annoying deprecation warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='matplotlib')
 
@@ -16,7 +16,7 @@ class SliderFitApp(pyqt5widget.QMainWindow):
     def __init__(self, PlotClass):
         super().__init__()
         
-        self.version = 0.6
+        self.version = 0.61
 
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         
@@ -137,8 +137,9 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         layout.addWidget(button_widget, 1, 1)
         
 #       Size of window set to 1024x768... might be too big for old desktops
-        layout.setColumnMinimumWidth(0, 1024)
-        layout.setRowMinimumHeight(0, 768)
+        screen_resolution = screeninfo.get_monitors()[0]
+        layout.setColumnMinimumWidth(0, screen_resolution.width/2)#1024)
+        layout.setRowMinimumHeight(0, screen_resolution.height/2)#768)
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
 
@@ -200,7 +201,7 @@ class cPlotAndFit(FigureCanvas):
         self.init_data()
         self.get_dof()
         if parent is not None:
-            self.fig = Figure(figsize=(4, 4))#, dpi=100)
+            self.fig = Figure(figsize=(4, 4))# figsize=(4, 4), dpi=100)
             self.define_plot_canvas()
             FigureCanvas.__init__(self, self.fig)
             FigureCanvas.setSizePolicy(self,

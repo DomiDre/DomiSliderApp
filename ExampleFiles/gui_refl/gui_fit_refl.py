@@ -1,9 +1,8 @@
 from PyQt5.QtWidgets import QApplication
-from slider_fit_app import SliderFitApp
-from slider_refl import cPlotAndFitRefl
+from DomiSliderApp.slider_fit_app import SliderFitApp
+from DomiSliderApp.slider_refl import cPlotAndFitRefl
 
-import refl_methods
-import reflectivity
+import ReflNanoparticles.reflectivity as reflectivity
 import numpy as np
 import sys, lmfit
 
@@ -14,9 +13,10 @@ class ReflGuiApp(cPlotAndFitRefl):
 
         self.data_path = "DD101_7_bruker.xy"
 
-        self.x, self.y, self.sy, *rest =\
-                refl_methods.load_data(self.data_path, self.qmin, self.qmax)
-
+        self.x = np.linspace(0.001, 0.1, 100)
+        self.y = np.linspace(0.001, 0.1, 100)*1
+        self.sy = np.linspace(0.001, 0.1, 100)*1
+        
         self.p = lmfit.Parameters()
         self.p.add('dai',              1e-4,          min=0.,   max=1e-3, vary=0)
         self.p.add('I0',               4.585e8,       min=1e7,  max=1e9,  vary=1)
