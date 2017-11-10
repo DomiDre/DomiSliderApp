@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication
-from DomiSliderApp.slider_fit_app import SliderFitApp
-from DomiSliderApp.slider_refl import cPlotAndFitRefl
+from SliderApp.slider_fit_app import SliderFitApp
+from SliderApp.slider_refl import cPlotAndFitRefl
 
 import ReflNanoparticles.reflectivity as reflectivity
 import numpy as np
@@ -14,9 +14,7 @@ class ReflGuiApp(cPlotAndFitRefl):
         self.data_path = "DD101_7_bruker.xy"
 
         self.x = np.linspace(0.001, 0.1, 100)
-        self.y = np.linspace(0.001, 0.1, 100)*1
-        self.sy = np.linspace(0.001, 0.1, 100)*1
-        
+
         self.p = lmfit.Parameters()
         self.p.add('dai',              1e-4,          min=0.,   max=1e-3, vary=0)
         self.p.add('I0',               4.585e8,       min=1e7,  max=1e9,  vary=1)
@@ -63,12 +61,12 @@ class ReflGuiApp(cPlotAndFitRefl):
                         0.])
         
         roughness = p["roughness"]*np.ones(len(sld))
-        thickness = np.array([0,\
+        thickness = np.array([50,\
                         oleic_spacer1,
                         particle_size_1,\
                         oleic_spacer2,\
                         particle_size_2,\
-                        10])
+                        0])
         
         q = reflectivity.math.angle_correct(self.x, p["th_offset"],\
                             self.wavelength)
