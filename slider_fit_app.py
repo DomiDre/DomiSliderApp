@@ -226,10 +226,10 @@ class cPlotAndFit(FigureCanvas):
         if self.y is not None and self.sy is not None:
             self.errorbar_data =\
                 self.ax1.errorbar(self.x, self.y, self.sy, marker='.',\
-                linestyle='None', color='#4dac26', label=self.data_path)
+                linestyle='None', color='#4dac26', label=self.data_path, zorder=1)
 
         self.model_plot, = self.ax1.plot(self.x, self.ymodel, marker='None',\
-                linestyle='-', color='#ca0020', lw=1, label="Model")
+                linestyle='-', color='#ca0020', lw=1, label="Model", zorder=2)
 
     def update_plot(self):
         self.ymodel = self.get_model(self.p, self.x)
