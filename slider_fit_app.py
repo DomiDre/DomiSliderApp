@@ -234,9 +234,12 @@ class cPlotAndFit(FigureCanvas):
     def update_plot(self):
         self.ymodel = self.get_model(self.p, self.x)
         self.model_plot.set_ydata(self.ymodel)
-        fom = self.figure_of_merit(self.p)
-        
-        self.chi2 = sum(fom**2)/self.dof
+        if self.y is not None:
+            fom = self.figure_of_merit(self.p)
+            self.chi2 = sum(fom**2)/self.dof
+        else:
+            fom = 0
+            self.chi2 = 0
         self.update_chi2()
         self.draw()
 
