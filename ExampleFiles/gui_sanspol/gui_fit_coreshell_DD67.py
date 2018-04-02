@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QApplication
-from slider_fit_app import SliderFitApp
-from slider_sanspol import cPlotAndFitSANSPOL
+from SliderApp.slider_fit_app import SliderFitApp
+from SliderApp.slider_sanspol import cPlotAndFitSANSPOL
 
-import sas_models
-import sas_methods
+import SASModels.sas_models as sas_models
+import SASModels.sas_methods as sas_methods
 import numpy as np
 import sys, lmfit
 
@@ -57,7 +57,6 @@ class SANSPOLGuiApp(cPlotAndFitSANSPOL):
         self.ynucsld, self.ymagsld = self.get_sld(self.p, self.xsld)
         
         
-        
     def get_model(self, p, xp_sa, xp_la, xm_sa, xm_la):
         R = p["R"]
         dshell = p["dshell"]
@@ -75,22 +74,22 @@ class SANSPOLGuiApp(cPlotAndFitSANSPOL):
         Imodelp_sa = sas_models.coreshell.magnetic_formfactor(\
                         xp_sa, R, dshell,\
                         SLDcore, SLDshell, SLDmatrix,\
-                        sigR, sigdshell, magSLDcore, 0, 0, self.xi,\
+                        sigR, sigdshell, 0, magSLDcore, 0, 0, self.xi,\
                         self.sin2alpha, 1)
         Imodelp_la = sas_models.coreshell.magnetic_formfactor(\
                         xp_la, R, dshell,\
                         SLDcore, SLDshell, SLDmatrix,\
-                        sigR, sigdshell, magSLDcore, 0, 0, self.xi,\
+                        sigR, sigdshell, 0, magSLDcore, 0, 0, self.xi,\
                         self.sin2alpha, 1)
         Imodelm_sa = sas_models.coreshell.magnetic_formfactor(\
                         xm_sa, R, dshell,\
                         SLDcore, SLDshell, SLDmatrix,\
-                        sigR, sigdshell, magSLDcore, 0, 0, self.xi,\
+                        sigR, sigdshell, 0, magSLDcore, 0, 0, self.xi,\
                         self.sin2alpha, -1) 
         Imodelm_la = sas_models.coreshell.magnetic_formfactor(\
                         xm_la, R, dshell,\
                         SLDcore, SLDshell, SLDmatrix,\
-                        sigR, sigdshell, magSLDcore, 0, 0, self.xi,\
+                        sigR, sigdshell, 0, magSLDcore, 0, 0, self.xi,\
                         self.sin2alpha, -1) 
                         
         self.sigQp_sa = np.sqrt((self.dlam_ov_lam * self.xp_sa)**2 +\
