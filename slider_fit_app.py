@@ -171,7 +171,7 @@ class SliderFitApp(pyqt5widget.QMainWindow):
         pyqt5widget.QMessageBox.about(self, "About",
               """
               Slider - Fitting App
-              Copyright 2016 Dominixue Dresen
+              Copyright 2016 Dominique Dresen
 
               Version """+str(self.version)+"""
 
