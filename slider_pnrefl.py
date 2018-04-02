@@ -1,4 +1,8 @@
-from slider_fit_app import cPlotAndFit
+try:
+    from .slider_fit_app import cPlotAndFit
+except:
+    from slider_fit_app import cPlotAndFit
+
 import PyQt5.QtWidgets as pyqt5widget
 import lmfit
 import numpy as np
