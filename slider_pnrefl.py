@@ -26,14 +26,18 @@ class cPlotAndFitPNRefl(cPlotAndFit):
         
         if self.x_p is not None and self.y_p is not None and self.sy_p is not None:
             self.ax1.errorbar(self.x_p, self.y_p, self.sy_p, marker='.',\
-                    linestyle='None', color='#008837', label=self.data_path_p)
+                    markersize=2,\
+                    linestyle='None', color='#92c5de', label=self.data_path_p,\
+                    zorder=0)
             self.ax1.errorbar(self.x_m, self.y_m, self.sy_m, marker='.',\
-                    linestyle='None', color='#7b3294', label=self.data_path_m)
+                    markersize=2,\
+                    linestyle='None', color='#f4a582', label=self.data_path_m,\
+                    zorder=0)
 
         self.model_plot_plus, = self.ax1.plot(self.x_p, self.ymodel_p, marker='None',\
-                linestyle='-', color='#2c7bb6', lw=1, label="Model+")
+                linestyle='-', color='#0571b0', lw=1, label="Model+", zorder=1)
         self.model_plot_minus, = self.ax1.plot(self.x_m, self.ymodel_m, marker='None',\
-                linestyle='-', color='#d7191c', lw=1, label="Model-")
+                linestyle='-', color='#ca0020', lw=1, label="Model-", zorder=1)
         
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(min(self.x_p), min(self.x_m)), max(max(self.x_p), max(self.x_m))])
