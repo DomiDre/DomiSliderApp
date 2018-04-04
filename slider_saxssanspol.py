@@ -30,12 +30,11 @@ class cPlotAndFitSAXSSANSPOL(cPlotAndFit):
 
         super().__init__(parent)
         
-    def get_sld(self, p, x):
-        sys.exit("Define ysaxssld, ynucsld, ymagsld=get_sld(p, x) in cPlotAndFitSAXS")
+    def get_sld(self, p):
+        sys.exit("Define ysaxssld, ynucsld, ymagsld=get_sld(p)")
     
-    def get_model(self, p, x_saxs, x_sa, x_la):
-        sys.exit("Define yp_sa, yp_la, ym_sa, ym_la=get_model(p, xp_sa, "+\
-                 "xp_la, xm_sa, xm_la) in cPlotAndFitSANSPOL")
+    def get_model(self, p):
+        sys.exit("Define yp_sa, yp_la, ym_sa, ym_la=get_model(p)")
 
     def get_dof(self):
         self.dof =  len(self.x_saxs) +\
@@ -53,43 +52,48 @@ class cPlotAndFitSAXSSANSPOL(cPlotAndFit):
         if self.x_saxs is not None and self.y_saxs is not None and\
            self.sy_saxs is not None:
             self.ax1.errorbar(self.x_saxs, self.y_saxs, self.sy_saxs, marker='.',\
-                    linestyle='None', color='#a6dba0', label=self.data_path_saxs)
+                    linestyle='None', color='#a6dba0',\
+                    label=self.data_path_saxs, zorder=0)
         
         if self.xp_sa is not None and self.yp_sa is not None and\
            self.syp_sa is not None:
             self.ax1.errorbar(self.xp_sa, self.yp_sa, self.syp_sa, marker='.',\
-                    linestyle='None', color='#4dac26', label=self.data_pathp_sa)
+                    linestyle='None', color='#4dac26',\
+                    label=self.data_pathp_sa, zorder=0)
 
         if self.xp_la is not None and self.yp_la is not None and\
            self.syp_la is not None:
             self.ax1.errorbar(self.xp_la, self.yp_la, self.syp_la, marker='.',\
-                    linestyle='None', color='#b8e186', label=self.data_pathp_la)
+                    linestyle='None', color='#b8e186',\
+                    label=self.data_pathp_la, zorder=0)
 
         if self.xm_sa is not None and self.ym_sa is not None and\
            self.sym_sa is not None:
             self.ax1.errorbar(self.xm_sa, self.ym_sa, self.sym_sa, marker='.',\
-                    linestyle='None', color='#d01c8b', label=self.data_pathm_sa)
+                    linestyle='None', color='#d01c8b',\
+                    label=self.data_pathm_sa, zorder=0)
 
         if self.xm_la is not None and self.ym_la is not None and\
            self.sym_la is not None:
             self.ax1.errorbar(self.xm_la, self.ym_la, self.sym_la, marker='.',\
-                    linestyle='None', color='#f1b6da', label=self.data_pathm_la)
+                    linestyle='None', color='#f1b6da',\
+                    label=self.data_pathm_la, zorder=0)
 
         self.model_plot_saxs, = self.ax1.plot(self.x_saxs, self.ymodel_saxs,\
                             marker='None', linestyle='-', color='#008837',\
-                            lw=1, label="Model")
+                            lw=1, label="Model", zorder=1)
         self.model_plotp_sa, = self.ax1.plot(self.xp_sa, self.ymodelp_sa,\
                             marker='None', linestyle='-', color='#0571b0',\
-                            lw=1, label="Model")
+                            lw=1, label="Model", zorder=1)
         self.model_plotp_la, = self.ax1.plot(self.xp_la, self.ymodelp_la,\
                             marker='None', linestyle='-', color='#92c5de',\
-                            lw=1, label="Model")
+                            lw=1, label="Model", zorder=1)
         self.model_plotm_sa, = self.ax1.plot(self.xm_sa, self.ymodelm_sa,\
                             marker='None', linestyle='-', color='#ca0020',\
-                            lw=1, label="Model")
+                            lw=1, label="Model", zorder=1)
         self.model_plotm_la, = self.ax1.plot(self.xm_la, self.ymodelm_la,\
                             marker='None', linestyle='-', color='#f4a582',\
-                            lw=1, label="Model")
+                            lw=1, label="Model", zorder=1)
         
         self.ax1.set_xscale('log')
         self.ax1.set_yscale('log')
@@ -113,19 +117,13 @@ class cPlotAndFitSAXSSANSPOL(cPlotAndFit):
                 marker='None', ls='-', color='#ca0020')
 
         self.ax2.set_xlim(min(self.xsld/10.), max(self.xsld/10.))
-        self.ax2.set_ylim(0, max(self.ynucsld)*1.5e6)
+        self.ax2.set_ylim(0, max(max(self.ynucsld), max(self.ysaxssld))*1.1e6)
         self.ax2.set_xlabel("$\mathit{z} \, / \, nm$")
         self.ax2.set_ylabel("$\mathit{SLD} \, / \, 10^{-6} \AA^{-2}$")
         self.fig.subplots_adjust(wspace=0.5)
         
     def update_plot(self):
-        self.ymodel_saxs,\
-            self.ymodelp_sa, self.ymodelp_la,\
-            self.ymodelm_sa, self.ymodelm_la =\
-                self.get_model(self.p,\
-                                self.x_saxs,\
-                                self.xp_sa, self.xp_la,\
-                                self.xm_sa, self.xm_la)
+        self.get_model(self.p)
         
         self.model_plot_saxs.set_ydata(self.ymodel_saxs)
         self.model_plotp_sa.set_ydata(self.ymodelp_sa)
@@ -133,7 +131,7 @@ class cPlotAndFitSAXSSANSPOL(cPlotAndFit):
         self.model_plotm_sa.set_ydata(self.ymodelm_sa)
         self.model_plotm_la.set_ydata(self.ymodelm_la)
         
-        self.ysaxssld, self.ynucsld, self.ymagsld = self.get_sld(self.p, self.xsld)
+        self.get_sld(self.p)
         
         self.sldsaxs_plot.set_ydata(self.ysaxssld*1e6)
         self.sldnuc_plot.set_ydata(self.ynucsld*1e6)
@@ -147,15 +145,11 @@ class cPlotAndFitSAXSSANSPOL(cPlotAndFit):
         self.draw()
         
     def figure_of_merit(self, p):
-        self.ymodel_saxs,\
-            self.ymodelp_sa, self.ymodelp_la,\
-            self.ymodelm_sa, self.ymodelm_la =\
-                self.get_model(self.p,\
-                                self.x_saxs,\
-                                self.xp_sa, self.xp_la,\
-                                self.xm_sa, self.xm_la)
+        self.get_model(p)
+
         resi_saxs = (np.log(self.ymodel_saxs)-np.log(self.y_saxs))/self.sy_saxs*\
                   self.y_saxs
+
         resip_sa = (np.log(self.ymodelp_sa)-np.log(self.yp_sa))/self.syp_sa*\
                   self.yp_sa
         resip_la = (np.log(self.ymodelp_la)-np.log(self.yp_la))/self.syp_la*\
@@ -164,6 +158,8 @@ class cPlotAndFitSAXSSANSPOL(cPlotAndFit):
                   self.ym_sa
         resim_la = (np.log(self.ymodelm_la)-np.log(self.ym_la))/self.sym_la*\
                   self.ym_la
+        if "weightSAXS" in p:
+            resi_saxs = resi_saxs * p["weightSAXS"].value
         resi = np.concatenate([resi_saxs, resip_sa, resip_la, resim_sa, resim_la])
         
         return resi
