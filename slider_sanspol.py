@@ -41,34 +41,34 @@ class cPlotAndFitSANSPOL(cPlotAndFit):
         if self.xp_sa is not None and self.yp_sa is not None and\
            self.syp_sa is not None:
             self.ax1.errorbar(self.xp_sa, self.yp_sa, self.syp_sa, marker='.',\
-                    linestyle='None', color='#4dac26', label=self.data_pathp_sa)
+                    linestyle='None', color='#92c5de', label=self.data_pathp_sa)
 
         if self.xp_la is not None and self.yp_la is not None and\
            self.syp_la is not None:
             self.ax1.errorbar(self.xp_la, self.yp_la, self.syp_la, marker='.',\
-                    linestyle='None', color='#b8e186', label=self.data_pathp_la)
+                    linestyle='None', color='#4393c3', label=self.data_pathp_la)
 
         if self.xm_sa is not None and self.ym_sa is not None and\
            self.sym_sa is not None:
             self.ax1.errorbar(self.xm_sa, self.ym_sa, self.sym_sa, marker='.',\
-                    linestyle='None', color='#d01c8b', label=self.data_pathm_sa)
+                    linestyle='None', color='#fddbc7', label=self.data_pathm_sa)
 
         if self.xm_la is not None and self.ym_la is not None and\
            self.sym_la is not None:
             self.ax1.errorbar(self.xm_la, self.ym_la, self.sym_la, marker='.',\
-                    linestyle='None', color='#f1b6da', label=self.data_pathm_la)
+                    linestyle='None', color='#f4a582', label=self.data_pathm_la)
 
         self.model_plotp_sa, = self.ax1.plot(self.xp_sa, self.ymodelp_sa,\
-                            marker='None', linestyle='-', color='#0571b0',\
+                            marker='None', linestyle='-', color='#2166ac',\
                             lw=1, label="Model")
         self.model_plotp_la, = self.ax1.plot(self.xp_la, self.ymodelp_la,\
-                            marker='None', linestyle='-', color='#92c5de',\
+                            marker='None', linestyle='-', color='#053061',\
                             lw=1, label="Model")
         self.model_plotm_sa, = self.ax1.plot(self.xm_sa, self.ymodelm_sa,\
-                            marker='None', linestyle='-', color='#ca0020',\
+                            marker='None', linestyle='-', color='#b2182b',\
                             lw=1, label="Model")
         self.model_plotm_la, = self.ax1.plot(self.xm_la, self.ymodelm_la,\
-                            marker='None', linestyle='-', color='#f4a582',\
+                            marker='None', linestyle='-', color='#67001f',\
                             lw=1, label="Model")
         
         self.ax1.set_xscale('log')
