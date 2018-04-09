@@ -11,8 +11,8 @@ class cPlotAndFitXRPNRefl(cPlotAndFit):
         self.reflsavefile = "gui_refl.dat"
         self.sldsavefile = "gui_sld.dat"
         self.data_path_xrr = None
-        self.data_path_p = None
-        self.data_path_m = None
+        self.data_path_pnr_p = None
+        self.data_path_pnr_m = None
 
         self.x_xrr = None
         self.y_xrr = None
@@ -41,52 +41,61 @@ class cPlotAndFitXRPNRefl(cPlotAndFit):
         self.ax2 = self.fig.add_subplot(212)
         
         if self.x_xrr is not None and self.y_xrr is not None and self.sy_xrr is not None:
-            self.data_plot_xrr, = self.ax1.errorbar(self.x_xrr, self.y_xrr, self.sy_xrr, marker='.',\
-                    markersize=2,\
-                    linestyle='None', color='#a6dba0', label=self.data_path_xrr,\
-                    zorder=0)
+            self.ax1.errorbar(\
+                self.x_xrr, self.y_xrr, self.sy_xrr, marker='.',\
+                markersize=2, linestyle='None', color='#a6dba0',\
+                label=self.data_path_xrr, zorder=0)
         if self.x_p is not None and self.y_p is not None and self.sy_p is not None:
-            self.ax1.errorbar(self.x_p, self.y_p, self.sy_p, marker='.',\
-                    markersize=2,\
-                    linestyle='None', color='#92c5de', label=self.data_path_p,\
-                    zorder=0)
+            self.ax1.errorbar(\
+                self.x_p, self.y_p, self.sy_p, marker='.',\
+                markersize=2, linestyle='None', color='#92c5de',\
+                label=self.data_path_pnr_p, zorder=0)
         if self.x_m is not None and self.y_m is not None and self.sy_m is not None:
-            self.ax1.errorbar(self.x_m, self.y_m, self.sy_m, marker='.',\
-                    markersize=2,\
-                    linestyle='None', color='#f4a582', label=self.data_path_m,\
-                    zorder=0)
+            self.ax1.errorbar(\
+                self.x_m, self.y_m, self.sy_m, marker='.',\
+                markersize=2, linestyle='None', color='#f4a582',\
+                label=self.data_path_pnr_m, zorder=0)
 
-        self.model_plot_xrr, = self.ax1.plot(self.x_xrr, self.ymodel_xrr, marker='None',\
-                linestyle='-', color='#008837', lw=1, label="XRR", zorder=1)
-        self.model_plot_plus, = self.ax1.plot(self.x_p, self.ymodel_p, marker='None',\
-                linestyle='-', color='#0571b0', lw=1, label="PNR I+", zorder=1)
-        self.model_plot_minus, = self.ax1.plot(self.x_m, self.ymodel_m, marker='None',\
-                linestyle='-', color='#ca0020', lw=1, label="PNR I-", zorder=1)
+        self.model_plot_xrr, = self.ax1.plot(self.x_xrr, self.ymodel_xrr,\
+             marker='None', linestyle='-', color='#008837', lw=1,\
+            label="XRR", zorder=1, alpha=0.4)
+        self.model_plot_plus, = self.ax1.plot(self.x_p, self.ymodel_p,\
+            marker='None', linestyle='-', color='#0571b0', lw=1,\
+            label="PNR I+", zorder=1, alpha=0.4)
+        self.model_plot_minus, = self.ax1.plot(self.x_m, self.ymodel_m,\
+            marker='None', linestyle='-', color='#ca0020', lw=1,\
+            label="PNR I-", zorder=1, alpha=0.4)
         
         self.ax1.set_yscale('log')
         self.ax1.set_xlim([min(min(self.x_xrr), min(self.x_p), min(self.x_m)),\
                            max(max(self.x_xrr), max(self.x_p), max(self.x_m))])
 
         if self.y is not None:
-            self.ax1.set_ylim([min(min(self.y_xrr), min(self.y_p), min(self.y_m))*0.8,\
-                               max(max(self.y_xrr), max(self.y_p), max(self.y_m))*1.2])
+            self.ax1.set_ylim(\
+                [min(min(self.y_xrr), min(self.y_p), min(self.y_m))*0.8,\
+                max(max(self.y_xrr), max(self.y_p), max(self.y_m))*1.2])
         else:
-            self.ax1.set_ylim([min(min(self.ymodel_xrr),\
-                                   min(self.ymodel_p), min(self.ymodel_m),\
-                                   min(self.y_p), min(self.y_m))*0.8,\
-                               max(max(self.ymodel_xrr),\
-                                   max(self.ymodel_p), max(self.ymodel_m),\
-                                   max(self.y_p), max(self.y_m))*1.2])
+            self.ax1.set_ylim(\
+                [min(min(self.ymodel_xrr),\
+                    min(self.ymodel_p), min(self.ymodel_m),\
+                    min(self.y_p), min(self.y_m))*0.8,\
+                max(max(self.ymodel_xrr),\
+                    max(self.ymodel_p), max(self.ymodel_m),\
+                    max(self.y_p), max(self.y_m))*1.2])
         self.ax1.set_xlabel("$\mathit{q_z} \, / \, \AA^{-1}$")
         self.ax1.set_ylabel("$\mathit{I} \, / \, a.u.$")
         
         
-        self.sld_xrr_plot, = self.ax2.plot(self.xsld/10., np.real(self.ysld_xrr)*1e6,\
-                marker='None', ls='-', color='#008837', label="$SLD_n$")
-        self.sld_nuc_plot, = self.ax2.plot(self.xsld/10., np.real(self.ysld_nuc)*1e6,\
-                marker='None', ls='-', color='#0571b0', label="$SLD_n$")
-        self.sld_mag_plot, = self.ax2.plot(self.xsld/10., np.real(self.ysld_mag)*1e6,\
-                marker='None', ls='-', color='#ca0020', label="$SLD_m$")
+        self.sld_xrr_plot, =\
+            self.ax2.plot(self.xsld/10., np.real(self.ysld_xrr)*1e6,\
+                marker='None', ls='-', color='#008837', label="$SLD_{xrr}$")
+        self.sld_nuc_plot, =\
+            self.ax2.plot(self.xsld/10., np.real(self.ysld_nuc)*1e6,\
+                marker='None', ls='-', color='#0571b0', label="$SLD_{nuc}$")
+        self.sld_mag_plot, =\
+            self.ax2.plot(self.xsld/10., np.real(self.ysld_mag)*1e6,\
+                marker='None', ls='-', color='#ca0020', label="$SLD_{mag}$")
+        self.ax2.legend(fontsize=8).draw_frame(True)
         self.ax2.set_xlim(min(self.xsld/10.), max(self.xsld/10.))
         self.ax2.set_xlabel("$\mathit{z} \, / \, nm$")
         self.ax2.set_ylabel("$\mathit{SLD} \, / \, 10^{-6} \AA^{-2}$")

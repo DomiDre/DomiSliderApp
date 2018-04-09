@@ -100,8 +100,8 @@ class cPlotAndFitSAXSSANS(cPlotAndFit):
         self.get_model(self.p)
         
         self.model_plot_saxs.set_ydata(self.ymodel_saxs)
-        self.model_plotp_sa.set_ydata(self.ymodel_sans_sa)
-        self.model_plotp_la.set_ydata(self.ymodel_sans_la)
+        self.model_plot_sans_sa.set_ydata(self.ymodel_sans_sa)
+        self.model_plot_sans_la.set_ydata(self.ymodel_sans_la)
         
         self.get_sld(self.p)
         
